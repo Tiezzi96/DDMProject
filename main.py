@@ -98,10 +98,6 @@ print(soup1.find_all('div', class_='c-article-section__figure-description'))
 L2 = soup1.find_all('div', class_='c-article-section__figure-description')
 print(len(L2))
 
-#print(soup1.find_all('div', class_='c-article-equation')[1])
-
-#print(soup.find_all('div', class_='c-article-equation')[1])
-
 l3 = soup.find_all('div', class_='c-article-section__figure-description')
 l4 = soup1.find_all('figcaption', class_='c-article-table__figcaption')
 
