@@ -410,7 +410,6 @@ for page2 in doc:
                                             eq).ratio() >= 0.5:
                                         print(eq)
                                         # time.sleep(4)
-                                    # time.sleep(3)
                                     if block['type'] == 0 and SequenceMatcher(None,
                                                                               eq.replace(" ", "").replace("_",
                                                                                                           "").replace("^","")[it_eq:it_eq + k],
