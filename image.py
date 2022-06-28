@@ -45,14 +45,14 @@ print(SequenceMatcher(None, 'abcd', 'abce').ratio())
 
 # print(fitz.__doc__)
 
-BASE_PATH = "/home/bernardo/Scaricati"
+#BASE_PATH = "/home/bernardo/Scaricati"
 DOC_NAME = "Tkaczyk2015_Article_CERMINEAutomaticExtractionOfSt.pdf"
 # DOC_NAME = "Cheng2020_Chapter_MaximumEntropyRegularizationAn.pdf"
 # DOC_NAME = "Zhou2020_Chapter_AnImprovedConvolutionalBlockAt.pdf"
 # DOC_NAME = "Das-Jawahar2020_Chapter_AdaptingOCRWithLimitedSupervis.pdf"
 # DOC_NAME = "Chakraborty2022_Article_ModelingRight-skewedHeavy-tail.pdf"
-DOC_PATH = BASE_PATH + "/" + DOC_NAME
-doc = fitz.open(f"{DOC_PATH}")
+#DOC_PATH = BASE_PATH + "/" + DOC_NAME
+#doc = fitz.open(f"{DOC_PATH}")
 # apri pure più pagine oltre la prima
 
 from fitz.utils import getColorList
@@ -74,8 +74,8 @@ color_white = fitz.utils.getColor("WHITE")
 # immagini
 
 
-def find_image(BASE_PATH, DOC_NAME, idx, fig_caption_coords, color_white, color_images):
-    DOC_PATH = BASE_PATH + "/" + DOC_NAME
+def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_caption_coords, color_white, color_images):
+    DOC_PATH = BASE_PATH + "/" + PDF_directory + "/" + DOC_NAME
     doc = fitz.open(f"{DOC_PATH}")
     index = 0
     for page2 in doc:
@@ -125,15 +125,15 @@ def find_image(BASE_PATH, DOC_NAME, idx, fig_caption_coords, color_white, color_
     else:
         doc.delete_pages(0, idx-1)
         doc.delete_pages(1, len(doc) - 1)
-    doc.save(f'{BASE_PATH}/' + DOC_NAME.replace(".pdf", "") + '_3.pdf')
+    doc.save(f'{BASE_PATH}/'+PDF_directory+ "/" + DOC_NAME.replace(".pdf", "") + '_3.pdf')
 
 
-    pages = convert_from_path(f'{BASE_PATH}/' + DOC_NAME.replace(".pdf", "") + '_3.pdf', 500)
+    pages = convert_from_path(f'{BASE_PATH}/' + PDF_directory + "/" + DOC_NAME.replace(".pdf", "") + '_3.pdf', 500)
 
     for page in pages:
-        page.save(f'{BASE_PATH}/' + DOC_NAME.replace(".pdf", "") + '_3.jpg', 'JPEG')
+        page.save(f'{BASE_PATH}/' + PDF_directory + "/" + DOC_NAME.replace(".pdf", "") + '_3.jpg', 'JPEG')
 
-    painting = plt.imread(f'{BASE_PATH}/' + DOC_NAME.replace(".pdf", "") + '_3.jpg')
+    painting = plt.imread(f'{BASE_PATH}/' + PDF_directory + "/" + DOC_NAME.replace(".pdf", "") + '_3.jpg')
     plt.imshow(painting, vmin=0, vmax=255)
     plt.show()
     gray_painting = rgb2gray(painting)
@@ -271,7 +271,7 @@ def find_image(BASE_PATH, DOC_NAME, idx, fig_caption_coords, color_white, color_
     width, height = bbox.width * fig.dpi, bbox.height * fig.dpi
 
     DOC_NAME2 = DOC_NAME.replace(".pdf", "")+"_3.pdf"
-    DOC_PATH2 = BASE_PATH + "/" + DOC_NAME2
+    DOC_PATH2 = BASE_PATH + "/" + PDF_directory + "/"  + DOC_NAME2
 
     doc2 = fitz.open(f"{DOC_PATH2}")
     xmin = 0
@@ -293,7 +293,7 @@ def find_image(BASE_PATH, DOC_NAME, idx, fig_caption_coords, color_white, color_
     box_image[1] = ymin
     box_image[2] = xmax
     box_image[3] = ymax
-    doc2.save(f'{BASE_PATH}/' + DOC_NAME2.replace("_3.pdf", "") + '_4.pdf')
+    doc2.save(f'{BASE_PATH}/' + PDF_directory + "/" + DOC_NAME2.replace("_3.pdf", "") + '_4.pdf')
     return box_image
 
 # find_image(BASE_PATH, DOC_NAME, 11, color_white, color_images)

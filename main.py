@@ -14,7 +14,11 @@ import re
 from sympy.parsing.latex import parse_latex
 from bs4 import BeautifulSoup
 
-BASE_PATH = "/home/bernardo/Scaricati"
+BASE_PATH = "/home/bernardo/Scaricati/DDMProjectFile"
+HTML_directory = "HTML_File"
+PDF_directory = "PDF_Document"
+Output_directory = "Output"
+
 print("Insert Link: ")
 link = input()
 print("Link is: "+link)
@@ -27,8 +31,7 @@ print("Link is: "+link)
 #link = "https://link.springer.com/article/10.1007/s40840-022-01317-w"
 # link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_7"
 # link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_15"
-# link =  "https://link.springer.com/article/10.1007/s10468-021-10058-6"
-
+# link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_4"
 with requests.Session() as s:
     s.proxies = {'https': 'http://7036865:Tbernardo96@proxyunifi.unifi.it:8888'}
 
@@ -38,7 +41,7 @@ with requests.Session() as s:
     title_link = soup1.find('title').text
 
     print(title_link)
-    path_to_html_file = BASE_PATH+"/"+title_link+".html"
+    path_to_html_file = BASE_PATH+"/"+HTML_directory+"/"+title_link+".html"
     print(path_to_html_file)
     file_exists = os.path.exists(path_to_html_file)
     if not file_exists:
@@ -54,7 +57,7 @@ with requests.Session() as s:
     r = s.get(pdf_url)
     print(":"+r.headers['content-disposition'].replace("inline; filename=", ""))
     pdf_name = r.headers['content-disposition'].replace("inline; filename=", "")
-    path_to_pdf_file = BASE_PATH+"/"+r.headers['content-disposition'].replace("inline; filename=", "")
+    path_to_pdf_file = BASE_PATH+"/"+PDF_directory+"/"+r.headers['content-disposition'].replace("inline; filename=", "")
     pdf_exists = os.path.exists(path_to_pdf_file)
     if not pdf_exists:
         print('pdf download')
@@ -524,7 +527,7 @@ for page2 in doc:
                     page2.draw_rect(Rect(block['bbox']), color=color_block, width=1.5)
     page2.draw_rect(Rect([eq_bbox[0], eq_bbox[1], eq_bbox[2], eq_bbox[3]]), color=color_word, width=1.5)
     if num_image_for_page > 0:
-        box_image = find_image(BASE_PATH, DOC_NAME, index-1, fig_caption_coords, color_white=color_white, color_images=color_images)
+        box_image = find_image(BASE_PATH, DOC_NAME, PDF_directory, Output_directory, index-1, fig_caption_coords, color_white=color_white, color_images=color_images)
         if len(fig_caption_coords) >= 2:
             if index == 9:
                 print(9)
@@ -543,4 +546,4 @@ for page2 in doc:
 #doc.save(f'{BASE_PATH}/Zhou2020_Chapter_AnImprovedConvolutionalBlockAt_2.pdf')
 # doc.save(f'{BASE_PATH}/Das-Jawahar2020_Chapter_AdaptingOCRWithLimitedSupervis_2.pdf')
 # doc.save(f'{BASE_PATH}/Chakraborty2022_Article_ModelingRight-skewedHeavy-tail_2.pdf')
-doc.save(f'{BASE_PATH}/'+DOC_NAME.replace(".pdf", "")+'_2.pdf')
+doc.save(f'{BASE_PATH}/'+Output_directory+"/"+DOC_NAME.replace(".pdf", "")+'_2.pdf')
