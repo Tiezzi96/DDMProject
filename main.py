@@ -25,7 +25,6 @@ print("Link is: "+link)
 # link = "https://link.springer.com/article/10.1007/s10032-019-00317-0"
 # link = "https://link.springer.com/article/10.1007/s10032-018-0312-3"
 #link = "https://link.springer.com/article/10.1007/s40840-022-01317-w"
-#link = "https://link.springer.com/article/10.1134/S2070048222040093"
 with requests.Session() as s:
     s.proxies = {'https': 'http://7036865:Tbernardo96@proxyunifi.unifi.it:8888'}
 
