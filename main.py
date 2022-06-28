@@ -25,6 +25,10 @@ print("Link is: "+link)
 # link = "https://link.springer.com/article/10.1007/s10032-019-00317-0"
 # link = "https://link.springer.com/article/10.1007/s10032-018-0312-3"
 #link = "https://link.springer.com/article/10.1007/s40840-022-01317-w"
+# link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_7"
+# link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_15"
+# link =  "https://link.springer.com/article/10.1007/s10468-021-10058-6"
+
 with requests.Session() as s:
     s.proxies = {'https': 'http://7036865:Tbernardo96@proxyunifi.unifi.it:8888'}
 
@@ -146,9 +150,9 @@ for row in soup.find_all('div', class_='c-article-equation__content'):
     row2 = LatexNodes2Text().latex_to_text(row.text.replace("", "")+"("+str(number)+")")
     l8.append(row2)
 
-print("l8: " + str(l8))
+print("equation list (l8): " + str(l8))
 dictl8 = {i: l8[i] for i in range(0, len(l8))}
-print("dictl8: " + str(dictl8))
+#print("dictl8: " + str(dictl8))
 
 figures_caption = []
 for row in soup.find_all('div', class_=lambda value: value and value.startswith('c-article-section__figure js-c-reading-companion-figures-item')):
@@ -167,20 +171,20 @@ def split(word):
 def title_inner(title, block):
     finded = False
     box = [0, 0, 0, 0]
-    for i in range(len([0])):
+    for i in range(len([0])): #
         line = ""
         for j in range(len(block['lines'][i]['spans'])):
             line += " " + block['lines'][i]['spans'][j]['text']
             print(block['lines'][i]['spans'][j]['text'].__contains__(title))
             if (title.__eq__(block['lines'][i]['spans'][j]['text']) or SequenceMatcher(None, block['lines'][i]['spans'][j]['text'].replace(" ", ""), title).ratio() >= 0.8)\
-                    and (block['lines'][i]['spans'][j]['flags']==20 or block['lines'][i]['spans'][j]['flags']==6):
+                    and (block['lines'][i]['spans'][j]['flags']==20 or block['lines'][i]['spans'][j]['flags']==6 or (block['lines'][i]['spans'][j]['text'].isupper()and title.isupper())):
                 finded = True
                 box = block['lines'][i]['spans'][j]['bbox']
                 break
             elif (title.__eq__(line)
                 or line.__contains__(title) or SequenceMatcher(None, line.replace(" ", ""), title).ratio() >= 0.8)\
                     and ((block['lines'][i]['spans'][0]['flags']==20 and block['lines'][i]['spans'][len(block['lines'][i]['spans'])-1]['flags']==20) or
-                         (block['lines'][i]['spans'][j]['flags']==6 and block['lines'][i]['spans'][len(block['lines'][i]['spans'])-1]['flags']==6)):
+                         (block['lines'][i]['spans'][j]['flags']==6 and block['lines'][i]['spans'][len(block['lines'][i]['spans'])-1]['flags']==6) or (line.isupper()and title.isupper())):
                 box = block['lines'][i]['bbox']
                 finded = True
                 break
@@ -298,9 +302,7 @@ for page2 in doc:
         texts = json.loads(texts)
         line = False
         print("len(texts['blocks']): " + str(len(texts['blocks'])))
-        #page2.draw_rect(Rect([170, 125, 150, 150]), color=color_rect)
         for block in texts['blocks']:
-            #page2.draw_rect(Rect(block['bbox']), color=color_block, width=1.5)
             s = ""
             colored = False
             try:
@@ -318,31 +320,13 @@ for page2 in doc:
                             print('oi')
                             # print(string)
                             x = block['lines'][i]['spans'][j]['text'].split()
-                            # print(SequenceMatcher(None, string.replace("'", ""),
-                            #                      block['lines'][i]['spans'][j]['text']).ratio())
-                            # print(split(x[2]))
                 print("phrase: "+s)
+                print("block['bbox']: "+str(block['bbox']))
                 if s.__eq__(" 123") and str(block).__eq__(texts['blocks'][len(texts['blocks'])-1]):
                     page2.draw_rect(Rect(block['bbox']), color=color_block, width=1.5)
                     continue
 
                 for string in l5:
-                    # if block['type'] == 0 and (SequenceMatcher(None, string.replace("'", ""),
-                    #                                          block['lines'][i]['spans'][j][
-                    #                                             'text']).ratio() >= 0.8 or string.replace("'",
-                    #                                                                                      "")
-                    #                       in block['lines'][i]['spans'][j]['text']) and (
-                    #  block['lines'][i]['spans'][j]['flags'] == 20 or
-                    #  block['lines'][i]['spans'][j]['flags'] == 6):  # all elements
-                    print(block['lines'][0]['spans'][0]['flags'])
-                    print(block['lines'][0]['spans'][0]['text'])
-                    print(block['lines'][len(block['lines']) - 1]['spans'][
-                              len(block['lines'][len(block['lines']) - 1]['spans']) - 1]['flags'])
-                    print(block['lines'][len(block['lines']) - 1]['spans'][
-                              len(block['lines'][len(block['lines']) - 1]['spans']) - 1]['text'])
-                    print(SequenceMatcher(None, string.replace("'", ""), s).ratio() >= 0.8 or string.replace("'",
-                                                                                                             "")
-                          in s)
                     if (s.__contains__("Implementation Details")):
                         print("oi")
                     if block['type'] == 0 and (
@@ -352,7 +336,7 @@ for page2 in doc:
                             (block['lines'][0]['spans'][0]['flags'] == 20 and
                              block['lines'][len(block['lines']) - 1]['spans']
                              [len(block['lines'][len(block['lines']) - 1]['spans']) - 1]['flags'] == 20) or
-                            block['lines'][0]['spans'][0]['flags'] == 6):  # all elements
+                            block['lines'][0]['spans'][0]['flags'] == 6 or (s.isupper()and string.isupper())):  # all elements
 
                         page2.draw_rect(Rect(block['bbox']), color=color_textline, width=1.5)
 
@@ -365,20 +349,10 @@ for page2 in doc:
                             page2.draw_rect(Rect(box), color=color_textline, width=1.5)
 
                             page2.draw_rect(Rect(block['bbox']), color=color_block, width=1.5)
-                            # page2.draw_rect(Rect(block['bbox']), color=color_textline, width=1.5)
-                            colored = True
-
-                        '''
-                        for line in block['lines']:
-                            page2.draw_rect(Rect(line['bbox']), color=color_textline)
-
-                            page2.add_freetext_annot(
-                                Rect(line['bbox'][0] + 110, line['bbox'][1], line['bbox'][2] + 110, line['bbox'][3]), "Title",
-                                text_color=color_textline)
-                            '''
+                            #colored = True
                 if colored.__eq__(False):
                     for fig_caption in figures_caption:
-                        if block['type'] == 0 and SequenceMatcher(None, s.replace(" ", ""), fig_caption.replace(" ", "")).ratio()>=0.9:
+                        if block['type'] == 0 and SequenceMatcher(None, s.replace(" ", ""), fig_caption.replace(" ", "")).ratio()>=0.8:
                             page2.draw_rect(Rect(block['bbox']),
                                             color=color_fig_caption, width=1.5)
                             fig_caption_coords.append([block['bbox'][1], block['bbox'][3]])
@@ -421,11 +395,6 @@ for page2 in doc:
                             eq_bbox = utils(eq_bbox, block)
                             colored = True
                             break
-                            #if eq_bbox[1] != 0 and eq_bbox[3] != 0:
-                            #    print(eq_bbox)
-                            #    page2.draw_rect(Rect([block['bbox'][0], eq_bbox[1], block['bbox'][2], eq_bbox[3]]), color=color_word)
-                            #page2.draw_rect(Rect(block['bbox']), color=color_word)
-                            # page2.draw_rect(Rect(block['lines'][i]['spans'][j]['bbox']), color=color_word)
                         else:
 
                             k = len(s.replace(" ", "").replace("�", ""))
@@ -450,12 +419,6 @@ for page2 in doc:
                                                                                                          "")).ratio() >= 0.6:
                                         eq_bbox = utils(eq_bbox, block)
                                         colored = True
-                                        #if eq_bbox[1] != 0 and eq_bbox[3] != 0:
-                                        #    print(eq_bbox)
-                                        #    page2.draw_rect(
-                                        #        Rect([block['bbox'][0], eq_bbox[1], block['bbox'][2], eq_bbox[3]]),
-                                        #        color=color_word)
-                                        #page2.draw_rect(Rect(block['bbox']), color=color_word)
                                         break
 
                                     it_eq += 1
@@ -488,25 +451,12 @@ for page2 in doc:
                                                         colored = True
                                                         page2.draw_rect(Rect([block['bbox'][0],block['bbox'][1], block['bbox'][2], box1[1]]), color=color_block, width=1.5)
 
-                                            # if eq_bbox[1] != 0 and eq_bbox[3] != 0:
-                                            #    print(eq_bbox)
-                                            #    page2.draw_rect(
-                                            #        Rect([block['bbox'][0], eq_bbox[1], block['bbox'][2], eq_bbox[3]]),
-                                            #        color=color_word)
-                                            # page2.draw_rect(Rect(block['bbox']), color=color_word)
                                             break
 
                                         it_s += 1
-                            #if colored.__eq__(False) and eq_bbox!=[0, 0, 0, 0]:
-                            #    page2.draw_rect(Rect(eq_bbox).intersect(Rect(block['bbox'])), color=color_Tab_caption, width=1.5)
-
-
                     if eq_bbox[1] != 0 and eq_bbox[3] != 0:
                         print("eq_bbox: "+str(eq_bbox))
                         print(s)
-                        #page2.draw_rect(Rect([eq_bbox[0], eq_bbox[1], eq_bbox[2], eq_bbox[3]]),
-                         #               color=color_word)
-
                 if colored.__eq__(False):
                     indexes = [i for i in range(0, 101)]
                     lst = []
@@ -528,14 +478,6 @@ for page2 in doc:
                             print("ref: " + ref)
                             print(SequenceMatcher(None, ref, s).ratio())
                             time.sleep(5)
-                        '''
-                        c = "\n"
-                        lst = [0]
-                        for pos, char in enumerate(ref):
-                            if char == c:
-                                lst.append(pos)
-                        lst.append(len(ref))
-                        '''
                         if s.__contains__("Cheng, C., Huang, Q., Bai, X."):
                             print("yes")
                         print(str(lst) + "  " + s)
@@ -597,15 +539,6 @@ for page2 in doc:
             page2.draw_rect(Rect(tmp), color=color_images, width=2)
         else:
             page2.draw_rect(Rect(box_image), color=color_images, width=2)
-
-    '''
-                        for iter in range(0, len(lst) - 1):
-                            if block['type'] == 0 and (
-                                    SequenceMatcher(None, ref[lst[iter]: lst[iter + 1]].replace(" ", ""),
-                                                    s.replace(" ", "")).ratio() >= 0.6
-                                    or ref.replace(" ", "").replace("_", "").__contains__(s.replace(" ", ""))):
-                                page2.draw_rect(Rect(block['bbox']), color=color_images)
-    '''
 # doc.save(f'{BASE_PATH}/Cheng2020_Chapter_MaximumEntropyRegularizationAn_2.pdf')
 #doc.save(f'{BASE_PATH}/Zhou2020_Chapter_AnImprovedConvolutionalBlockAt_2.pdf')
 # doc.save(f'{BASE_PATH}/Das-Jawahar2020_Chapter_AdaptingOCRWithLimitedSupervis_2.pdf')

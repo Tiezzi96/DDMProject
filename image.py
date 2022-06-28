@@ -188,16 +188,26 @@ def find_image(BASE_PATH, DOC_NAME, idx, fig_caption_coords, color_white, color_
             bbox.append(regions[num].bbox)
             list_of_index.append(num)
     count = len(masks)
-    if count<2:
-        return [0,0,0,0]
-    fig, ax = plt.subplots(2, int(count / 2), figsize=(15, 8))
-    for axis, box, mask in zip(ax.flatten(), bbox, masks):
-        red = painting[:, :, 0][box[0]:box[2], box[1]:box[3]] * mask
-        green = painting[:, :, 1][box[0]:box[2], box[1]:box[3]] * mask
-        blue = painting[:, :, 2][box[0]:box[2], box[1]:box[3]] * mask
-        image = np.dstack([red, green, blue])
-        axis.imshow(image)
-    plt.show()
+    if count.__eq__(0):
+        return [0, 0, 0, 0]
+    if count.__eq__(1):
+        fig, ax = plt.subplots(2, count, figsize=(15, 8))
+        for axis, box, mask in zip(ax.flatten(), bbox, masks):
+            red = painting[:, :, 0][box[0]:box[2], box[1]:box[3]] * mask
+            green = painting[:, :, 1][box[0]:box[2], box[1]:box[3]] * mask
+            blue = painting[:, :, 2][box[0]:box[2], box[1]:box[3]] * mask
+            image = np.dstack([red, green, blue])
+            axis.imshow(image)
+        plt.show()
+    else:
+        fig, ax = plt.subplots(2, int(count / 2), figsize=(15, 8))
+        for axis, box, mask in zip(ax.flatten(), bbox, masks):
+            red = painting[:, :, 0][box[0]:box[2], box[1]:box[3]] * mask
+            green = painting[:, :, 1][box[0]:box[2], box[1]:box[3]] * mask
+            blue = painting[:, :, 2][box[0]:box[2], box[1]:box[3]] * mask
+            image = np.dstack([red, green, blue])
+            axis.imshow(image)
+        plt.show()
 
     rgb_mask = np.zeros_like(label_im)
     for x in list_of_index:
