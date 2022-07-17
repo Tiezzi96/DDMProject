@@ -7,16 +7,6 @@ import codecs
 import sympy
 import re
 from sympy.parsing.latex import parse_latex
-page = requests.get("https://dataquestio.github.io/web-scraping-pages/simple.html")
-#f = codecs.open("/home/bernardo/Scaricati/CERMINE automatic extraction of structured metadata from scientific literature | SpringerLink.html", "r")
-f = codecs.open(
-    "/home/bernardo/Scaricati/Maximum Entropy Regularization and Chinese Text Recognition | SpringerLink.html", "r")
-#f = codecs.open(
-#    "/home/bernardo/Scaricati/An Improved Convolutional Block Attention Module for Chinese Character Recognition | SpringerLink.html", "r")
-# f=codecs.open("/home/bernardo/Scaricati/Adapting OCR with Limited Supervision | SpringerLink.html")
-# f=codecs.open("/home/bernardo/Scaricati/Modeling Right-skewed Heavy-tail Right-censored Survival Data with Application to HIV Viral Load | SpringerLink.html")
-page = f
-
 from bs4 import BeautifulSoup
 from typing import List
 import fitz
@@ -226,7 +216,7 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
     box1 = [0, 0, 0, 0]
     for props in regions:
         y0, x0 = props.centroid
-        if props.area > 50 and (props.axis_minor_length/props.axis_major_length) > 0.1:
+        if props.area > 75 and (props.axis_minor_length/props.axis_major_length) > 0.1:
             print("props.bbox[0]: "+str(props))
             centroids.append(props.centroid)
             print("x0 e y0: " + str(x0) + ", " + str(y0))

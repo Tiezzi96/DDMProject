@@ -13,6 +13,7 @@ import sympy
 import re
 from sympy.parsing.latex import parse_latex
 from bs4 import BeautifulSoup
+from pylatexenc.latex2text import LatexNodes2Text
 
 BASE_PATH = "/home/bernardo/Scaricati/DDMProjectFile"
 HTML_directory = "HTML_File"
@@ -22,20 +23,24 @@ Output_directory = "Output"
 print("Insert Link: ")
 link = input()
 print("Link is: "+link)
+
 # link = "https://link.springer.com/article/10.1007/s10032-015-0249-8"
 # link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_1"
 # link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_2"
 # link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_3"
 # link = "https://link.springer.com/article/10.1007/s10032-019-00317-0"
 # link = "https://link.springer.com/article/10.1007/s10032-018-0312-3"
-#link = "https://link.springer.com/article/10.1007/s40840-022-01317-w"
+# link = "https://link.springer.com/article/10.1007/s40840-022-01317-w"
 # link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_7"
 # link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_15"
 # link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_4"
+# link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_5"
+
 with requests.Session() as s:
     s.proxies = {'https': 'http://7036865:Tbernardo96@proxyunifi.unifi.it:8888'}
-
+    s.trust_env = False
     response_link = s.post(link)
+    print("proxy")
     r_link = s.get(link)
     soup1 = BeautifulSoup(r_link.text, "html.parser")
     title_link = soup1.find('title').text
@@ -52,7 +57,7 @@ with requests.Session() as s:
         print('html page exists')
     pdf_url = soup1.find("meta", attrs={"name": "citation_pdf_url"})['content']
     print(pdf_url)
-    response = s.post(pdf_url)
+    #response = s.post(pdf_url)
     #print(response)
     r = s.get(pdf_url)
     print(":"+r.headers['content-disposition'].replace("inline; filename=", ""))
@@ -65,43 +70,21 @@ with requests.Session() as s:
             f3.write(r.content)
     else:
         print('pdf exists')
-    #exit(0)
 
+'''
+# blocco utile nel caso non funzioni il download dei file utilizzando il proxy server
+print("Insert Name HTML File: ")
+name_html_file =input()
+path_to_html_file = BASE_PATH+"/"+HTML_directory+"/"+name_html_file
+print("Insert Name of PDF File: ")
+pdf_name = input()
+path_to_pdf_file = BASE_PATH+"/"+PDF_directory+"/"+pdf_name
+# fine blocco
+'''
 f = codecs.open(path_to_html_file)
-# f = codecs.open("/home/bernardo/Scaricati/CERMINE automatic extraction of structured metadata from scientific literature | SpringerLink.html", "r")
-#f = codecs.open(
-#    "/home/bernardo/Scaricati/Maximum Entropy Regularization and Chinese Text Recognition | SpringerLink.html", "r")
-#f = codecs.open(
-#    "/home/bernardo/Scaricati/An Improved Convolutional Block Attention Module for Chinese Character Recognition | SpringerLink.html", "r")
-# f=codecs.open("/home/bernardo/Scaricati/Adapting OCR with Limited Supervision | SpringerLink.html")
-# f=codecs.open("/home/bernardo/Scaricati/Modeling Right-skewed Heavy-tail Right-censored Survival Data with Application to HIV Viral Load | SpringerLink.html")
 page = f
 
 soup = BeautifulSoup(f.read(), 'html.parser')
-#print(soup.prettify())
-print("\nOIOIOIO\n")
-
-print([type(item) for item in list(soup.children)])
-print(soup.find_all(name='dc.description'))
-print(soup.find_all('script', class_='js-entry'))
-html = list(soup.children)[2]
-# print(list(html.children))
-
-f1 = codecs.open(
-    "/home/bernardo/Scaricati/KERTAS dataset for automatic dating of ancient Arabic manuscripts | SpringerLink.html",
-    "r")
-page1 = f1
-soup1 = BeautifulSoup(f1.read(), 'html.parser')
-print(soup1.find_all('h2', class_='c-article-section__title js-section-title js-c-reading-companion-sections-item'))
-print(soup1.find_all('figcaption', class_='c-article-table__figcaption'))
-print(soup1.find_all('div', class_='c-article-section__figure-description'))
-L2 = soup1.find_all('div', class_='c-article-section__figure-description')
-print(len(L2))
-
-l3 = soup.find_all('div', class_='c-article-section__figure-description')
-l4 = soup1.find_all('figcaption', class_='c-article-table__figcaption')
-
-print(len(l4))
 
 l5 = []
 for row in soup.find_all('h2', class_='c-article-section__title js-section-title js-c-reading-companion-sections-item'):
@@ -132,26 +115,14 @@ for row in soup.find_all('p', class_=lambda value: value and value.startswith('c
 print("references: "+str(references))
 print(len(references))
 
-
-from pylatexenc.latex2text import LatexNodes2Text
-'''
 l8 = []
-number=0
-for row in soup.find_all('script', type='math/tex; mode=display'):
-    number += 1
-    row2 = LatexNodes2Text().latex_to_text(row.text+"("+str(number)+")")
-    l8.append(row2)
-'''
-l8 = []
-number=0
+number = 0
 for row in soup.find_all('div', class_='c-article-equation__content'):
     number += 1
     row2 = LatexNodes2Text().latex_to_text(row.text.replace("", "")+"("+str(number)+")")
     l8.append(row2)
 
 print("equation list (l8): " + str(l8))
-dictl8 = {i: l8[i] for i in range(0, len(l8))}
-#print("dictl8: " + str(dictl8))
 
 figures_caption = []
 for row in soup.find_all('div', class_=lambda value: value and value.startswith('c-article-section__figure js-c-reading-companion-figures-item')):
@@ -253,10 +224,6 @@ from difflib import SequenceMatcher
 
 print(SequenceMatcher(None, 'abcd', 'abce').ratio())
 
-# optional
-# import pdfkit
-
-# print(fitz.__doc__)
 DOC_NAME = pdf_name
 #DOC_NAME = "Tkaczyk2015_Article_CERMINEAutomaticExtractionOfSt.pdf"
 # DOC_NAME = "Cheng2020_Chapter_MaximumEntropyRegularizationAn.pdf"
@@ -284,15 +251,13 @@ color_fig_caption = fitz.utils.getColor("YELLOW3")
 color_Tab_caption = fitz.utils.getColor("DARKBLUE")
 color_white = fitz.utils.getColor("WHITE")
 
-# %%
-# immagini
 index = 0
 for page2 in doc:
     num_image_for_page = 0
     eq_bbox = [0, 0, 0, 0]
     fig_caption_coords = []
     index += 1
-    if index > 30:
+    if index > 51:
         break
     if index > 0:
         images = page2.get_image_info()
@@ -321,25 +286,20 @@ for page2 in doc:
                             x = block['lines'][i]['spans'][j]['text'].split()
                 print("phrase: "+s)
                 print("block['bbox']: "+str(block['bbox']))
-                if s.__eq__(" 123") and str(block).__eq__(texts['blocks'][len(texts['blocks'])-1]):
+                if (s.__eq__(" 123") or s.__eq__(" 1 3")) and str(block).__eq__(texts['blocks'][len(texts['blocks'])-1]):
                     page2.draw_rect(Rect(block['bbox']), color=color_block, width=1.5)
                     continue
-
                 for string in l5:
-                    if (s.__contains__("Implementation Details")):
-                        print("oi")
                     if block['type'] == 0 and (
                             SequenceMatcher(None, string.replace("'", ""), s).ratio() >= 0.75 or string.replace("'",
                                                                                                                "")
                             in s) and (
-                            (block['lines'][0]['spans'][0]['flags'] == 20 and
+                            (block['lines'][0]['spans'][0]['flags'] >= 20 and
                              block['lines'][len(block['lines']) - 1]['spans']
-                             [len(block['lines'][len(block['lines']) - 1]['spans']) - 1]['flags'] == 20) or
-                            block['lines'][0]['spans'][0]['flags'] == 6 or (s.isupper()and string.isupper())):  # all elements
+                             [len(block['lines'][len(block['lines']) - 1]['spans']) - 1]['flags'] >= 20) or
+                            block['lines'][0]['spans'][0]['flags'] == 6 or (s.isupper() and string.isupper())):  # all elements
 
                         page2.draw_rect(Rect(block['bbox']), color=color_textline, width=1.5)
-
-                        #page2.draw_rect(Rect(block['bbox']), color=color_textline, width=1.5)
                         colored = True
                         print("flag: " + str(block['lines'][i]['spans'][j]['flags']))
                     else:
@@ -370,21 +330,6 @@ for page2 in doc:
                                             color=color_word, width=1.5)
                             eq_bbox = [0, 0, 0, 0]
                     for eq in l8:
-                        if s.__contains__("⎪ ⎪ ⎪ ⎪ ⎩"):
-                            print(s.replace("�", ""))
-                            print("bella")
-                            print(block['bbox'])
-                            print(' '.join(filter(lambda x: x in printable, s)))
-                            print(s.replace("-", ""))
-                            print(eq)
-                            print(eq.replace(" ", "").replace("_",""))
-                            print(s)
-                            print(s.replace(" ", ""))
-                            print(eq.replace(" ", "").replace("_", "").__contains__(
-                                s.replace(" ", "").replace("�", "")))
-                            print(SequenceMatcher(None, eq.replace(" ", "").replace("_", ""),
-                                                  s.replace(" ", "")).ratio())
-                            #time.sleep(4)
                         if block['type'] == 0 and (
                                 SequenceMatcher(None, eq.replace(" ", "").replace("_", "").replace("^",""), s.replace(" ", "")).ratio() >= 0.69
                                 or eq.replace(" ", "").replace("_", "").replace("^","").__contains__(s.replace(" ", "").replace("�", "")
@@ -401,9 +346,9 @@ for page2 in doc:
                             it_eq = 0
                             if k < len(eq.replace(" ", "")):
                                 while it_eq + k <= len(eq):
-                                    print("eq: " + str(eq.replace(" ", "")[it_eq:it_eq + k]))
-                                    print("k: " + str(k))
-                                    print("s: " + str(s))
+                                    # print("eq: " + str(eq.replace(" ", "")[it_eq:it_eq + k]))
+                                    # print("k: " + str(k))
+                                    # print("s: " + str(s))
                                     if SequenceMatcher(None, "f(q)=q", s).ratio() >= 0.7 and SequenceMatcher(
                                             None,
                                             " f(q)=q( 1 + λlogq - λ∑_j p_j logp_j) ",
@@ -438,7 +383,7 @@ for page2 in doc:
                                             print(s.replace(" ", "").replace("�","")[it_s:it_s + k])
                                             box2 = [0, 0, 0, 0]
                                             for i in range(len(block['lines'])):
-                                                eq_embedded=""
+                                                eq_embedded = ""
                                                 box1 = [0, 0, 0, 0]
                                                 for j in range(len(block['lines'][i]['spans'])):
                                                     eq_embedded += block['lines'][i]['spans'][j]['text']
@@ -460,25 +405,11 @@ for page2 in doc:
                     lst = []
                     for l in indexes:
                         char = " " + str(l) + ". "
-                        print("char: " + str(char))
                         if s.__contains__(char):
                             lst.append(s.rfind(char))
-                    print("lst: " + str(lst))
                     lst.sort()
 
                     for ref in references:
-                        if SequenceMatcher(None,
-                                           "31. Yepes, A.J.: Conﬁdence penalty, annealing Gaussian noise and zoneout for biLSTM-CRF networks for named entity recognition. arXiv preprint",
-                                           s).ratio() >= 0.8 and SequenceMatcher(None,
-                                                                                 "31. Yepes, A.J.: Conﬁdence penalty, annealing Gaussian noise and zoneout for biLSTM-CRF networks for named entity recognition. arXiv preprint",
-                                                                                 ref).ratio() >= 0.8:
-                            print("s: " + s)
-                            print("ref: " + ref)
-                            print(SequenceMatcher(None, ref, s).ratio())
-                            time.sleep(5)
-                        if s.__contains__("Cheng, C., Huang, Q., Bai, X."):
-                            print("yes")
-                        print(str(lst) + "  " + s)
                         if len(lst) == 1:
                             if block['type'] == 0 and (
                                     SequenceMatcher(None, s.replace(" ", ""),
@@ -508,8 +439,7 @@ for page2 in doc:
                         print("ss: "+s)
                         print("percentual: "+str(percentual))
                         eq_bbox = utils(eq_bbox, block)
-                        colored=True
-                    # eq_bbox = utils(eq_bbox, block)
+                        colored = True
                     elif not((block['bbox'][1]+5) >= eq_bbox[1] >= (block['bbox'][1]-5)):
                         page2.draw_rect(Rect(block['bbox']), color=color_block, width=1.5)
                 elif eq_bbox != [0, 0, 0, 0] and not s.__contains__(":"):
@@ -524,9 +454,6 @@ for page2 in doc:
     if num_image_for_page > 0:
         box_image = find_image(BASE_PATH, DOC_NAME, PDF_directory, Output_directory, index-1, fig_caption_coords, color_white=color_white, color_images=color_images)
         if len(fig_caption_coords) >= 2:
-            if index == 9:
-                print(9)
-
             tmp = box_image
             inc = 10
             for coord in fig_caption_coords:
@@ -537,8 +464,5 @@ for page2 in doc:
             page2.draw_rect(Rect(tmp), color=color_images, width=2)
         else:
             page2.draw_rect(Rect(box_image), color=color_images, width=2)
-# doc.save(f'{BASE_PATH}/Cheng2020_Chapter_MaximumEntropyRegularizationAn_2.pdf')
-#doc.save(f'{BASE_PATH}/Zhou2020_Chapter_AnImprovedConvolutionalBlockAt_2.pdf')
-# doc.save(f'{BASE_PATH}/Das-Jawahar2020_Chapter_AdaptingOCRWithLimitedSupervis_2.pdf')
-# doc.save(f'{BASE_PATH}/Chakraborty2022_Article_ModelingRight-skewedHeavy-tail_2.pdf')
+
 doc.save(f'{BASE_PATH}/'+Output_directory+"/"+DOC_NAME.replace(".pdf", "")+'_2.pdf')
