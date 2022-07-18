@@ -17,9 +17,9 @@ Prima di eseguire il programma è necessario settare, all'interno della sessione
 All'avvio il programma richiede di fornire in input il link del file HTML relativo al documento PDF da classificare.
 
 Il file **image.py** contiene la funzione
-'''ruby
+```ruby
 find_image()
-'''
+```
 
 ## Classi
 Le classi utilizzate durante l'esecuzione del sorgente sono le seguenti:
