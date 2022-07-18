@@ -15,6 +15,7 @@ from sympy.parsing.latex import parse_latex
 from bs4 import BeautifulSoup
 from pylatexenc.latex2text import LatexNodes2Text
 
+# path di destinazione per i file scaricati e processati
 BASE_PATH = "/home/bernardo/Scaricati/DDMProjectFile"
 HTML_directory = "HTML_File"
 PDF_directory = "PDF_Document"
@@ -24,6 +25,7 @@ print("Insert Link: ")
 link = input()
 print("Link is: "+link)
 
+# se non fornisco in input il link posso utilizzare i seguenti link per effettuare i vari test
 # link = "https://link.springer.com/article/10.1007/s10032-015-0249-8"
 # link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_1"
 # link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_2"
@@ -36,6 +38,7 @@ print("Link is: "+link)
 # link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_4"
 # link = "https://link.springer.com/chapter/10.1007/978-3-030-57058-3_5"
 
+# definisco una sessione per settare il proxy dell'università e scaricare i file
 with requests.Session() as s:
     s.proxies = {'https': 'http://7036865:Tbernardo96@proxyunifi.unifi.it:8888'}
     s.trust_env = False
@@ -85,7 +88,7 @@ f = codecs.open(path_to_html_file)
 page = f
 
 soup = BeautifulSoup(f.read(), 'html.parser')
-
+# sfruttando la libreria BeautifulSoup eseguo la ricerca sul file HTML per individuare le classi
 l5 = []
 for row in soup.find_all('h2', class_='c-article-section__title js-section-title js-c-reading-companion-sections-item'):
     l5.append(row.text)
@@ -145,7 +148,7 @@ def title_inner(title, block):
         line = ""
         for j in range(len(block['lines'][i]['spans'])):
             line += " " + block['lines'][i]['spans'][j]['text']
-            print(block['lines'][i]['spans'][j]['text'].__contains__(title))
+            # print(block['lines'][i]['spans'][j]['text'].__contains__(title))
             if (title.__eq__(block['lines'][i]['spans'][j]['text']) or SequenceMatcher(None, block['lines'][i]['spans'][j]['text'].replace(" ", ""), title).ratio() >= 0.8)\
                     and (block['lines'][i]['spans'][j]['flags']==20 or block['lines'][i]['spans'][j]['flags']==6 or (block['lines'][i]['spans'][j]['text'].isupper()and title.isupper())):
                 finded = True
@@ -280,10 +283,6 @@ for page2 in doc:
                     for j in range(len(block['lines'][i]['spans'])):
                         s += " "+block['lines'][i]['spans'][j]['text']
                         print("i: " + str(i) + " j: " + str(j) + " text: " + block['lines'][i]['spans'][j]['text'])
-                        if block['lines'][i]['spans'][j]['text'] == "4 Extraction workﬂow implementation":
-                            print('oi')
-                            # print(string)
-                            x = block['lines'][i]['spans'][j]['text'].split()
                 print("phrase: "+s)
                 print("block['bbox']: "+str(block['bbox']))
                 if (s.__eq__(" 123") or s.__eq__(" 1 3")) and str(block).__eq__(texts['blocks'][len(texts['blocks'])-1]):
@@ -346,15 +345,6 @@ for page2 in doc:
                             it_eq = 0
                             if k < len(eq.replace(" ", "")):
                                 while it_eq + k <= len(eq):
-                                    # print("eq: " + str(eq.replace(" ", "")[it_eq:it_eq + k]))
-                                    # print("k: " + str(k))
-                                    # print("s: " + str(s))
-                                    if SequenceMatcher(None, "f(q)=q", s).ratio() >= 0.7 and SequenceMatcher(
-                                            None,
-                                            " f(q)=q( 1 + λlogq - λ∑_j p_j logp_j) ",
-                                            eq).ratio() >= 0.5:
-                                        print(eq)
-                                        # time.sleep(4)
                                     if block['type'] == 0 and SequenceMatcher(None,
                                                                               eq.replace(" ", "").replace("_",
                                                                                                           "").replace("^","")[it_eq:it_eq + k],
@@ -371,11 +361,6 @@ for page2 in doc:
                                 k = len(eq.replace(" ", "").replace("_", "".replace("^","")))
                                 if k < len(s.replace(" ", "").replace("�", "")):
                                     while it_s + k <= len(s):
-                                        if SequenceMatcher(None, s.replace(" ", "").replace("�","")[it_s:it_s + k], "py=-LCE").ratio()>=0.5:
-                                            print("oi")
-                                        print("s: " + str(s.replace(" ", "").replace("�","")[it_s:it_s + k]))
-                                        print("k: " + str(k))
-                                        print("eq: " + str(eq))
                                         if block['type'] == 0 and SequenceMatcher(None,
                                                                                   s.replace(" ", "").replace("�","")[it_s:it_s + k],
                                                                                   eq.replace(" ", "").replace("_",
@@ -444,7 +429,7 @@ for page2 in doc:
                         page2.draw_rect(Rect(block['bbox']), color=color_block, width=1.5)
                 elif eq_bbox != [0, 0, 0, 0] and not s.__contains__(":"):
                     aligned = inline(eq_bbox, block)
-                    print(aligned)
+                    # print(aligned)
                     if aligned:
                         eq_bbox = utils(eq_bbox, block)
                         colored = True
