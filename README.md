@@ -20,7 +20,7 @@ All'avvio il programma richiede di fornire in input il link del file HTML relati
 Le classi utilizzate durante l'esecuzione del sorgente sono le seguenti:
 <div style="text-align:right">
 <img src="https://github.com/Tiezzi96/DDMProject/blob/master/classi.png" width="30%" /></div>
-Ad ogni classe è associato un colore utilizzato per evidenziare i _bounding box_ di ogni blocco di testo.
+Ad ogni classe è associato un colore utilizzato per evidenziare i _bounding_ _box_ di ogni blocco di testo.
 
 ## Output
 L'output fornito dal programma è mostrato di seguito in figura:
