@@ -29,3 +29,6 @@ L'output fornito dal programma è mostrato di seguito in figura:
 <img src="https://github.com/Tiezzi96/DDMProject/blob/master/output1.png" width="30%" />
 <img src="https://github.com/Tiezzi96/DDMProject/blob/master/output2.png" width="30%" />
 <img src="https://github.com/Tiezzi96/DDMProject/blob/master/output3.png" width="30%" /></div>
+
+## Licence
+[Bernardo Tiezzi](https://github.com/Tiezzi96), 2022
