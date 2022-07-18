@@ -11,3 +11,21 @@ L'elaborato è un progetto sviluppato nel linguaggio di programmazione **python3
 - [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
 - [Scikit-Image](https://scikit-image.org/)
 - [SymPy](https://www.sympy.org/en/index.html).
+
+## Esecuzione del programma
+Prima di eseguire il programma è necessario settare, all'interno della sessione definita nel file **main.py**, le credenziali di accesso al proprio account SpringerLink o settare il proxy del proprio istituto accademico, con le proprie credenziali universitarie. Nel caso si utilizzino file gia presenti sul disco o open source ciò non è richiesto.
+All'avvio il programma richiede di fornire in input il link del file HTML relativo al documento PDF da classificare. 
+
+## Classi
+Le classi utilizzate durante l'esecuzione del sorgente sono le seguenti:
+<div style="text-align:right">
+<img src="https://github.com/Tiezzi96/DDMProject/blob/master/classi.png" width="30%" /></div>
+
+Ad ogni classe è associato un colore utilizzato per evidenziare i _bounding box_ di ogni blocco di testo.
+
+## Output
+L'output fornito dal programma è mostrato di seguito in figura:
+<div style="text-align:center"> 
+<img src="https://github.com/Tiezzi96/DDMProject/blob/master/output1.png" width="30%" />
+<img src="https://github.com/Tiezzi96/DDMProject/blob/master/output2.png" width="30%" />
+<img src="https://github.com/Tiezzi96/DDMProject/blob/master/output3.png" width="30%" /></div>
