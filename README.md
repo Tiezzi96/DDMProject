@@ -24,7 +24,7 @@ Ad ogni classe è associato un colore utilizzato per evidenziare i *bounding box
 
 ## Output
 L'output fornito dal programma è mostrato di seguito in figura:
-<div style="text-align:center">
+<div style="text-align:center"> 
 <img src="https://github.com/Tiezzi96/DDMProject/blob/master/output1.png" width="30%" />
 <img src="https://github.com/Tiezzi96/DDMProject/blob/master/output2.png" width="30%" />
 <img src="https://github.com/Tiezzi96/DDMProject/blob/master/output3.png" width="30%" /></div>
