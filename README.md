@@ -20,7 +20,8 @@ Il file **image.py** contiene la funzione:
 ```ruby
 find_image()
 ```
-Tale metodo è impiegato per individuare il *bounding box* delle figure, non rilevato dalla libreria *PyMuPDF*, attaverso le componenti connesse delle figure. ```ruby 
+Tale metodo è impiegato per individuare il *bounding box* delle figure, non rilevato dalla libreria *PyMuPDF*, attaverso le componenti connesse delle figure. 
+
 ## Classi
 Le classi utilizzate durante l'esecuzione del sorgente sono le seguenti:
 <div style="text-align:right">
