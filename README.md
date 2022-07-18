@@ -14,7 +14,12 @@ L'elaborato è un progetto sviluppato nel linguaggio di programmazione **python3
 
 ## Esecuzione del programma
 Prima di eseguire il programma è necessario settare, all'interno della sessione definita nel file **main.py**, le credenziali di accesso al proprio account SpringerLink o settare il proxy del proprio istituto accademico, con le proprie credenziali universitarie. Nel caso si utilizzino file gia presenti sul disco o open source ciò non è richiesto.
-All'avvio il programma richiede di fornire in input il link del file HTML relativo al documento PDF da classificare. 
+All'avvio il programma richiede di fornire in input il link del file HTML relativo al documento PDF da classificare.
+
+Il file **image.py** contiene la funzione
+'''ruby
+find_image()
+'''
 
 ## Classi
 Le classi utilizzate durante l'esecuzione del sorgente sono le seguenti:
