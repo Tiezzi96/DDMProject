@@ -117,7 +117,6 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
         doc.delete_pages(1, len(doc) - 1)
     doc.save(f'{BASE_PATH}/'+PDF_directory+ "/" + DOC_NAME.replace(".pdf", "") + '_3.pdf')
 
-
     pages = convert_from_path(f'{BASE_PATH}/' + PDF_directory + "/" + DOC_NAME.replace(".pdf", "") + '_3.pdf', 500)
 
     for page in pages:
@@ -173,7 +172,7 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
         convex_area = x.convex_area
 #        if (num != 0 and (area > 100) and (convex_area / area < 1.05)
 #                and (convex_area / area > 0.95)):
-        if (area > 50):
+        if area > 50:
             masks.append(regions[num].convex_image)
             bbox.append(regions[num].bbox)
             list_of_index.append(num)
@@ -209,7 +208,6 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
     imshow(image)
     plt.show()
 
-    centroids = []
     import math
     fig, ax = plt.subplots()
     ax.imshow(image, cmap=plt.cm.gray)
@@ -218,16 +216,7 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
         y0, x0 = props.centroid
         if props.area > 75 and (props.axis_minor_length/props.axis_major_length) > 0.1:
             print("props.bbox[0]: "+str(props))
-            centroids.append(props.centroid)
-            print("x0 e y0: " + str(x0) + ", " + str(y0))
-            orientation = props.orientation
-            x1 = x0 + math.cos(orientation) * 0.5 * props.minor_axis_length
-            y1 = y0 - math.sin(orientation) * 0.5 * props.minor_axis_length
-            x2 = x0 - math.sin(orientation) * 0.5 * props.major_axis_length
-            y2 = y0 - math.cos(orientation) * 0.5 * props.major_axis_length
 
-            # ax.plot((x0, x1), (y0, y1), '-r', linewidth=2.5)
-            # ax.plot((x0, x2), (y0, y2), '-r', linewidth=2.5)
             ax.plot(x0, y0, '.g', markersize=15)
 
             minr, minc, maxr, maxc = props.bbox
@@ -247,9 +236,7 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
                 box1[2] = minr
             if box1[3] < maxr:
                 box1[3] = maxr
-            # bx = (minc, maxc, maxc, minc, minc)
-            # by = (minr, minr, maxr, maxr, minr)
-            # ax.plot(bx, by, '-b', linewidth=2.5)
+
     bx = (box1[0], box1[1], box1[1], box1[0], box1[0])
     by = (box1[2], box1[2], box1[3], box1[3], box1[2])
     ax.plot(bx, by, '-b', linewidth=2.5)
@@ -278,7 +265,6 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
         ymin = box1[2] * page2.mediabox[3] // image.shape[0]
         ymax = box1[3] * page2.mediabox[3] // image.shape[0]
         page2.draw_rect(Rect([xmin, ymin, xmax, ymax]), color=color_images)
-        # page2.draw_rect(Rect([100,200,300,400]), color=color_block)
     box_image[0] = xmin
     box_image[1] = ymin
     box_image[2] = xmax
