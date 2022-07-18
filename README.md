@@ -19,4 +19,4 @@ All'avvio il programma richiede di fornire in input il link del file HTML relati
 ## Classi
 Le classi utilizzate durante l'esecuzione del sorgente sono le seguenti:
 <div style="text-align:right">
-<img src="https://github.com/Tiezzi96/DDMProject/blob/master/classi.png" width="45%" /></div>
+<img src="https://github.com/Tiezzi96/DDMProject/blob/master/classi.png" width="20%" /></div>
