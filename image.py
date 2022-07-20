@@ -28,22 +28,14 @@ from skimage.measure import label, regionprops, regionprops_table
 
 from pdf2image import convert_from_path
 
-print(SequenceMatcher(None, 'abcd', 'abce').ratio())
-
-# optional
-# import pdfkit
-
-# print(fitz.__doc__)
-
-#BASE_PATH = "/home/bernardo/Scaricati"
+# BASE_PATH = "/home/bernardo/Scaricati"
 DOC_NAME = "Tkaczyk2015_Article_CERMINEAutomaticExtractionOfSt.pdf"
 # DOC_NAME = "Cheng2020_Chapter_MaximumEntropyRegularizationAn.pdf"
 # DOC_NAME = "Zhou2020_Chapter_AnImprovedConvolutionalBlockAt.pdf"
 # DOC_NAME = "Das-Jawahar2020_Chapter_AdaptingOCRWithLimitedSupervis.pdf"
 # DOC_NAME = "Chakraborty2022_Article_ModelingRight-skewedHeavy-tail.pdf"
-#DOC_PATH = BASE_PATH + "/" + DOC_NAME
-#doc = fitz.open(f"{DOC_PATH}")
-# apri pure più pagine oltre la prima
+# DOC_PATH = BASE_PATH + "/" + DOC_NAME
+# doc = fitz.open(f"{DOC_PATH}")
 
 from fitz.utils import getColorList
 
@@ -68,9 +60,8 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
     DOC_PATH = BASE_PATH + "/" + PDF_directory + "/" + DOC_NAME
     doc = fitz.open(f"{DOC_PATH}")
     index = 0
-    for page2 in doc:
+    for page2 in doc: # rimuovo dalla pagina del pdf ogni blocco di testo riconosciuto dalla libreria PyMuPDF
         eq_bbox = [0, 0, 0, 0]
-        #index += 1
         if index > idx:
             break
         if index > idx-1:
@@ -81,11 +72,7 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
             texts = json.loads(texts)
             line = False
             print("len(texts['blocks']): " + str(len(texts['blocks'])))
-            # page2.draw_rect(Rect([170, 125, 150, 150]), color=color_rect)
             for block in texts['blocks']:
-                # page2.draw_rect(Rect(block['bbox']), color=color_block, width=1.5)
-                s = ""
-                colored = False
                 try:
                     print(block['lines'][0]['spans'][0]['text'])
                     line = True
@@ -97,8 +84,7 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
                         page2.draw_rect(Rect(block['bbox']), color=color_white, width=1.5, fill=color_white)
                 if block['type'] == 1:  # images
                     page2.draw_rect(Rect(block['bbox']), color=color_white, width=1.5, fill=color_white)
-        index+=1
-    lenght = len(doc)
+        index += 1
     if idx == 0:
         doc.delete_pages(1, len(doc) - 1)
     elif idx == 1:
@@ -110,21 +96,23 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
     elif idx == len(doc)-2:
         doc.delete_pages(0, len(doc)-3)
         doc.delete_page(1)
-    elif idx==len(doc)-1:
+    elif idx == len(doc)-1:
         doc.delete_pages(0, len(doc)-2)
     else:
         doc.delete_pages(0, idx-1)
         doc.delete_pages(1, len(doc) - 1)
+# salvo il nuovo documento PDF contenente solo la pagina di interesse
     doc.save(f'{BASE_PATH}/'+PDF_directory+ "/" + DOC_NAME.replace(".pdf", "") + '_3.pdf')
 
     pages = convert_from_path(f'{BASE_PATH}/' + PDF_directory + "/" + DOC_NAME.replace(".pdf", "") + '_3.pdf', 500)
-
+# traformo la pagina del documento PDF in formato JPEG in modo da poterci eseguire le operazioni di dilation ed erosion
     for page in pages:
         page.save(f'{BASE_PATH}/' + PDF_directory + "/" + DOC_NAME.replace(".pdf", "") + '_3.jpg', 'JPEG')
 
     painting = plt.imread(f'{BASE_PATH}/' + PDF_directory + "/" + DOC_NAME.replace(".pdf", "") + '_3.jpg')
     plt.imshow(painting, vmin=0, vmax=255)
     plt.show()
+    # binarizzazione dei colori con valore di soglia posto a 0.6
     gray_painting = rgb2gray(painting)
     # binarized = gray_painting < 0.55
     binarized = gray_painting < 0.60
@@ -134,7 +122,7 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
     square = np.array([[1, 1, 1],
                        [1, 1, 1],
                        [1, 1, 1]])
-
+    # copro i buchi interni alla figura con operazioni di dilation ed erosion
     def multi_dil(im, num, element=square):
         for i in range(num):
             im = dilation(im, element)
@@ -151,7 +139,7 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
     opened = opening(multi_eroded)
     imshow(opened)
     plt.show()
-
+    # assegno la stessa etichetta a gruppi adiacenti di pixel
     label_im = label(opened)
     regions = regionprops(label_im)
     imshow(label_im)
@@ -214,6 +202,8 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
     box1 = [0, 0, 0, 0]
     for props in regions:
         y0, x0 = props.centroid
+        # considero le sole regioni la cui area non sia inferiore ad una certa soglia
+        # e con un rapporto tra le lunghezze degli assi non sbilanciato
         if props.area > 75 and (props.axis_minor_length/props.axis_major_length) > 0.1:
             print("props.bbox[0]: "+str(props))
 
@@ -241,7 +231,6 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
     by = (box1[2], box1[2], box1[3], box1[3], box1[2])
     ax.plot(bx, by, '-b', linewidth=2.5)
 
-    # ax.axis((0, 3000, 5000, 0))
     plt.show()
     fig = plt.figure()
     bbox = fig.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
@@ -255,6 +244,7 @@ def find_image(BASE_PATH, DOC_NAME,PDF_directory, Output_directory, idx, fig_cap
     ymin = 0
     xmax = 0
     ymax = 0
+    # sfruttando i bbox di ogni regione considerata individuo il bbox dell'intera immagine
     box_image = [0, 0, 0, 0]
     for page2 in doc2:
         print("box1: " + str(box1))

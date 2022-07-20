@@ -136,19 +136,13 @@ for row in soup.find_all('figcaption', class_=lambda value: value and value.star
     tables_caption.append(row.text)
 print("table_caption: "+str(tables_caption))
 
-
-def split(word):
-    return [char for char in word]
-
-
-def title_inner(title, block):
+def title_inner(title, block): # controllo eseguito nel caso in cui il titolo sia legato al blocco di testo sottostante
     finded = False
     box = [0, 0, 0, 0]
-    for i in range(len([0])): #
+    for i in range(len([0])):
         line = ""
         for j in range(len(block['lines'][i]['spans'])):
             line += " " + block['lines'][i]['spans'][j]['text']
-            # print(block['lines'][i]['spans'][j]['text'].__contains__(title))
             if (title.__eq__(block['lines'][i]['spans'][j]['text']) or SequenceMatcher(None, block['lines'][i]['spans'][j]['text'].replace(" ", ""), title).ratio() >= 0.8)\
                     and (block['lines'][i]['spans'][j]['flags']==20 or block['lines'][i]['spans'][j]['flags']==6 or (block['lines'][i]['spans'][j]['text'].isupper()and title.isupper())):
                 finded = True
@@ -164,7 +158,7 @@ def title_inner(title, block):
     return finded, box
 
 
-def utils(eq_bbox, block):
+def utils(eq_bbox, block): # funzione di aggiornamento del bbox di un'equazione
     if eq_bbox[0] == 0 or eq_bbox[2] == 0:
         eq_bbox[0] = block['bbox'][0]
         eq_bbox[2] = block['bbox'][2]
@@ -199,7 +193,7 @@ def utils(eq_bbox, block):
     return eq_bbox
 
 
-def inline(eq_bbox, block):
+def inline(eq_bbox, block): # controllo se il blocco è posto sulla stessa linea del bbox di un'equazione
     aligned = False
     if (block['bbox'][1]+20>=eq_bbox[1]>= block['bbox'][1]-20):
         aligned = True
@@ -213,9 +207,6 @@ def inline(eq_bbox, block):
         aligned = True
     return aligned
 
-# Driver code
-word = 'geeks'
-print(split(word))
 from typing import List
 import fitz
 from fitz.fitz import Point, Page, Rect
@@ -225,18 +216,16 @@ import json
 from image import find_image
 from difflib import SequenceMatcher
 
-print(SequenceMatcher(None, 'abcd', 'abce').ratio())
-
 DOC_NAME = pdf_name
-#DOC_NAME = "Tkaczyk2015_Article_CERMINEAutomaticExtractionOfSt.pdf"
+# i filename sottostanti sono utili in caso di malfunzionamento del server proxy
+# DOC_NAME = "Tkaczyk2015_Article_CERMINEAutomaticExtractionOfSt.pdf"
 # DOC_NAME = "Cheng2020_Chapter_MaximumEntropyRegularizationAn.pdf"
 # DOC_NAME = "Zhou2020_Chapter_AnImprovedConvolutionalBlockAt.pdf"
 # DOC_NAME = "Das-Jawahar2020_Chapter_AdaptingOCRWithLimitedSupervis.pdf"
 # DOC_NAME = "Chakraborty2022_Article_ModelingRight-skewedHeavy-tail.pdf"
-#DOC_PATH = BASE_PATH + "/" + DOC_NAME
-#doc = fitz.open(f"{DOC_PATH}")
+# DOC_PATH = BASE_PATH + "/" + DOC_NAME
+# doc = fitz.open(f"{DOC_PATH}")
 doc = fitz.open(f"{path_to_pdf_file}")
-# apri pure più pagine oltre la prima
 
 from fitz.utils import getColorList
 
@@ -268,7 +257,6 @@ for page2 in doc:
         texts = page2.get_text("json")
         texts = json.loads(texts)
         line = False
-        print("len(texts['blocks']): " + str(len(texts['blocks'])))
         for block in texts['blocks']:
             s = ""
             colored = False
@@ -284,7 +272,6 @@ for page2 in doc:
                         s += " "+block['lines'][i]['spans'][j]['text']
                         print("i: " + str(i) + " j: " + str(j) + " text: " + block['lines'][i]['spans'][j]['text'])
                 print("phrase: "+s)
-                print("block['bbox']: "+str(block['bbox']))
                 if (s.__eq__(" 123") or s.__eq__(" 1 3")) and str(block).__eq__(texts['blocks'][len(texts['blocks'])-1]):
                     page2.draw_rect(Rect(block['bbox']), color=color_block, width=1.5)
                     continue
@@ -307,7 +294,6 @@ for page2 in doc:
                             page2.draw_rect(Rect(box), color=color_textline, width=1.5)
 
                             page2.draw_rect(Rect(block['bbox']), color=color_block, width=1.5)
-                            #colored = True
                 if colored.__eq__(False):
                     for fig_caption in figures_caption:
                         if block['type'] == 0 and SequenceMatcher(None, s.replace(" ", ""), fig_caption.replace(" ", "")).ratio()>=0.8:
@@ -374,7 +360,6 @@ for page2 in doc:
                                                     eq_embedded += block['lines'][i]['spans'][j]['text']
                                                     box1 = utils(box1, block['lines'][i]['spans'][j])
                                                 if SequenceMatcher(None, eq_embedded, s.replace(" ", "").replace("�","")[it_s:it_s + k]).ratio() >= 0.7:
-                                                        #eq_bbox = utils(eq_bbox, box)
                                                         page2.draw_rect(Rect(box1), color=color_word, width=1.5)
                                                         colored = True
                                                         page2.draw_rect(Rect([block['bbox'][0],block['bbox'][1], block['bbox'][2], box1[1]]), color=color_block, width=1.5)
@@ -382,9 +367,6 @@ for page2 in doc:
                                             break
 
                                         it_s += 1
-                    if eq_bbox[1] != 0 and eq_bbox[3] != 0:
-                        print("eq_bbox: "+str(eq_bbox))
-                        print(s)
                 if colored.__eq__(False):
                     indexes = [i for i in range(0, 101)]
                     lst = []
@@ -429,7 +411,6 @@ for page2 in doc:
                         page2.draw_rect(Rect(block['bbox']), color=color_block, width=1.5)
                 elif eq_bbox != [0, 0, 0, 0] and not s.__contains__(":"):
                     aligned = inline(eq_bbox, block)
-                    # print(aligned)
                     if aligned:
                         eq_bbox = utils(eq_bbox, block)
                         colored = True
