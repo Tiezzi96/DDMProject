@@ -40,7 +40,7 @@ print("Link is: "+link)
 
 # definisco una sessione per settare il proxy dell'università e scaricare i file
 with requests.Session() as s:
-    s.proxies = {'https': 'http://7036865:Tbernardo96@proxyunifi.unifi.it:8888'}
+    s.proxies = {'https': 'http://[username]:[password]@proxyunifi.unifi.it:8888'}
     s.trust_env = False
     response_link = s.post(link)
     print("proxy")
